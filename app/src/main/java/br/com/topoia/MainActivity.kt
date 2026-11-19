@@ -375,10 +375,10 @@ private fun LevelBookCalculator() {
         else runCatching {
             val stations = rows.lineSequence().filter { it.isNotBlank() }.mapIndexed { index, line ->
                 val f = line.split(';')
-                require(f.size == 6) { "Linha \${index + 1}: informe seis campos separados por ponto e vírgula." }
+                require(f.size == 6) { "Linha ${index + 1}: informe seis campos separados por ponto e vírgula." }
                 val intermediates = if (f[2].isBlank()) emptyList() else f[2].split('|').map { item ->
                     val pair = item.split(':')
-                    require(pair.size == 2) { "Intermediária inválida na linha \${index + 1}." }
+                    require(pair.size == 2) { "Intermediária inválida na linha ${index + 1}." }
                     NivelamentoCaderneta.IntermediateSight(pair[0].trim(), parse(pair[1]) ?: error("Leitura intermediária inválida."))
                 }
                 NivelamentoCaderneta.Station(
@@ -389,13 +389,13 @@ private fun LevelBookCalculator() {
             }.toList()
             val r = NivelamentoCaderneta.calculate(startPoint.trim(), elevation, stations)
             buildString {
-                append("Cota final: \${fmt(r.finalElevation)} m\\n")
-                append("Σ ré: \${fmt(r.sumBacksights)} m | Σ vante: \${fmt(r.sumForesights)} m\\n")
-                append("Conferência: \${fmt(r.arithmeticCheck)} m\\n")
-                append("Distância acumulada: \${fmt(r.totalDistanceMeters)} m\\n\\n")
-                r.points.drop(1).forEach { append("\${it.point} (\${it.type}): \${fmt(it.elevation)} m | HI: \${fmt(it.instrumentHeight)} m\\n") }
+                append("Cota final: ${fmt(r.finalElevation)} m\n")
+                append("Σ ré: ${fmt(r.sumBacksights)} m | Σ vante: ${fmt(r.sumForesights)} m\n")
+                append("Conferência: ${fmt(r.arithmeticCheck)} m\\n")
+                append("Distância acumulada: ${fmt(r.totalDistanceMeters)} m\\n\\n")
+                r.points.drop(1).forEach { append("${it.point} (${it.type}): ${fmt(it.elevation)} m | HI: ${fmt(it.instrumentHeight)} m\\n") }
             }
-        }.getOrElse { "Erro na caderneta: \${it.message}" }
+        }.getOrElse { "Erro na caderneta: ${it.message}" }
     }, modifier = Modifier.fillMaxWidth()) { Text("CALCULAR CADERNETA") }
     result?.let { ResultCard(it) }
 }
