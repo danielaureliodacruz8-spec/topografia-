@@ -25,15 +25,15 @@ class RoadSectionCalculationsTest {
             listOf(
                 RoadSectionCalculations.GroundPoint(7.0, 98.0),
                 RoadSectionCalculations.GroundPoint(10.0, 99.0),
-                RoadSectionCalculations.GroundPoint(13.0, 101.0)
+                RoadSectionCalculations.GroundPoint(13.0, 95.0)
             ),
             1.5,
             1
         )
         assertNotNull(result)
         assertEquals("Aterro", result!!.type)
-        assertEquals(10.5, result.offset, 1e-9)
-        assertEquals(99.0, result.elevation, 1e-9)
+        assertEquals(11.5, result.offset, 1e-9)
+        assertEquals(97.0, result.elevation, 1e-9)
     }
 
     @Test
@@ -43,14 +43,14 @@ class RoadSectionCalculationsTest {
             listOf(
                 RoadSectionCalculations.GroundPoint(5.0, 102.0),
                 RoadSectionCalculations.GroundPoint(8.0, 100.0),
-                RoadSectionCalculations.GroundPoint(11.0, 98.0)
+                RoadSectionCalculations.GroundPoint(11.0, 94.0)
             ),
             1.5,
             -1
         )
         assertNotNull(result)
         assertEquals("Corte", result!!.type)
-        assertEquals(-8.0, result.offset, 1e-9)
+        assertEquals(-9.5, result.offset, 1e-9)
     }
 
     @Test
