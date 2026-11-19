@@ -9,7 +9,7 @@
 
 ## Módulos
 1. Topografia básica: cálculo direto/inverso, azimute, rumo, distância, área, interseções e irradiação.
-2. Poligonais: fechada por ângulos internos e aberta enquadrada por deflexões assinadas; fechamento angular/linear e Bowditch. Poligonais abertas sem coordenada final conhecida e mínimos quadrados permanecem em desenvolvimento.
+2. Poligonais: fechada por ângulos internos e aberta enquadrada por deflexões assinadas; fechamento angular/linear e Bowditch. Tela inicial calcula e compensa poligonais a partir de azimutes e distâncias. Poligonais abertas sem coordenada final conhecida e mínimos quadrados permanecem em desenvolvimento.
 3. Nivelamento: simples, composto, caderneta com múltiplas estações, ré, vante, intermediárias, HI, cotas, conferência aritmética e compensação. Tela de caderneta permite inserir estações e leituras intermediárias.
 4. Estação total: irradiação por distância/azimute, orientação por leitura horizontal e azimute da ré, redução de distância inclinada por ângulo zenital, alturas do instrumento/prisma, locação e interseção de visadas para ponto inacessível. Resseção por distâncias com três ou mais pontos de apoio e ajustamento iterativo por mínimos quadrados.
 5. Geometria rodoviária: estaqueamento, curvas horizontais/verticais, greide, rampas, superelevação e seções.
