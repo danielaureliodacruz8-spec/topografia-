@@ -23,7 +23,11 @@ Protótipo técnico em desenvolvimento, versão 0.1.0. A estrutura Android nativ
 - Nivelamento geométrico simples;
 - Conversor de estacas;
 - Irradiação por estação total;
-- Caderneta de nivelamento composto com múltiplas estações e leituras intermediárias;\n- Resseção por distâncias com três pontos de apoio;\n- Curvas horizontais e verticais rodoviárias;\n- Áreas de seções transversais e volumes por áreas médias;\n- Cadastro, importação e exportação CSV de pontos, com persistência local no Android.
+- Caderneta de nivelamento composto com múltiplas estações e leituras intermediárias;
+- Resseção por distâncias com três pontos de apoio;
+- Curvas horizontais e verticais rodoviárias;
+- Áreas de seções transversais e volumes por áreas médias;
+- Cadastro, importação e exportação CSV de pontos, com persistência local no Android.
 
 ## Limitações importantes
 
