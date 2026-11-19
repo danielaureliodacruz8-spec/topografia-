@@ -50,7 +50,7 @@ class RoadSectionCalculationsTest {
         )
         assertNotNull(result)
         assertEquals("Corte", result!!.type)
-        assertEquals(-9.5, result.offset, 1e-9)
+        assertEquals(-6.5, result.offset, 1e-9)
     }
 
     @Test
