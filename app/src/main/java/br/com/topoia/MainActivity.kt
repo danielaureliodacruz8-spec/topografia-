@@ -61,7 +61,7 @@ fun TopoIAApp() {
 @Composable
 private fun Dashboard() {
     var selected by remember { mutableStateOf("Início") }
-    val modules = listOf("Início", "Coordenadas", "Nivelamento", "Estacas")
+    val modules = listOf("Início", "Coordenadas", "Nivelamento", "Estacas", "Estação total")
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp)) {
         Text("TOPO IA", fontSize = 30.sp, fontWeight = FontWeight.Bold, color = Cyan)
         Text("Central inteligente de topografia", color = Color.LightGray)
@@ -85,7 +85,7 @@ private fun Dashboard() {
         when (selected) {
             "Coordenadas" -> InverseCalculator()
             "Nivelamento" -> LevelCalculator()
-            "Estacas" -> StationCalculator()
+            "Estacas" -> StationCalculator()\n            "Estação total" -> TotalStationCalculator()
             else -> HomeModules()
         }
     }
@@ -97,7 +97,7 @@ private fun HomeModules() {
     val items = listOf(
         "Poligonais e ajustamento" to "Ângulos, azimutes, distâncias, fechamento e coordenadas.",
         "Coordenadas" to "Cálculo inverso e irradiação de pontos.",
-        "Nivelamento" to "Ré, vante, altura do instrumento, cotas e desníveis.",
+        "Nivelamento" to "Ré, vante, altura do instrumento, cotas e desníveis.",\n        "Estação total" to "Irradiação por azimute e distância horizontal; redução e locação em expansão.",
         "Geometria rodoviária" to "Estaqueamento, curvas, greide, rampas e superelevação.",
         "Terraplenagem e drenagem" to "Corte, aterro, volumes, taludes e dispositivos.",
         "Modo Estrada + IA" to "Leitura de nota de serviço, coletora e orientação de locação."
@@ -186,4 +186,27 @@ private fun ResultCard(text: String) {
     Card(Modifier.fillMaxWidth().padding(top = 14.dp), colors = CardDefaults.cardColors(containerColor = Color(0xFF12352F))) {
         Text(text, Modifier.padding(16.dp), color = Color(0xFF86EFAC), fontWeight = FontWeight.SemiBold)
     }
+}
+
+@Composable
+private fun TotalStationCalculator() {
+    var east by remember { mutableStateOf("500000") }
+    var north by remember { mutableStateOf("8000000") }
+    var distance by remember { mutableStateOf("25") }
+    var azimuth by remember { mutableStateOf("90") }
+    var result by remember { mutableStateOf<String?>(null) }
+    Text("Irradiação por estação total", fontSize = 19.sp, fontWeight = FontWeight.Bold)
+    Text("Informe a coordenada da estação, a distância horizontal e o azimute contado do Norte no sentido horário.", color = Color.LightGray, fontSize = 12.sp)
+    NumberField("Este da estação (E)", east) { east = it }
+    NumberField("Norte da estação (N)", north) { north = it }
+    NumberField("Distância horizontal (m)", distance) { distance = it }
+    NumberField("Azimute (graus)", azimuth) { azimuth = it }
+    Button(onClick = {
+        val e = parse(east); val n = parse(north); val d = parse(distance); val a = parse(azimuth)
+        result = if (e != null && n != null && d != null && a != null && d >= 0) {
+            val point = TotalStationCalculations.radiate(TotalStationCalculations.Coordinate(e, n), d, a)
+            "Ponto calculado\nE: ${fmt(point.east)} m\nN: ${fmt(point.north)} m\nDistância: ${fmt(d)} m\nAzimute: ${fmt(((a % 360.0) + 360.0) % 360.0)}°"
+        } else "Confira os valores. A distância não pode ser negativa."
+    }, modifier = Modifier.fillMaxWidth()) { Text("CALCULAR PONTO") }
+    result?.let { ResultCard(it) }
 }
