@@ -478,10 +478,10 @@ private fun EarthworkCalculator() {
                 EarthworkCalculations.Section(0.0,a1),
                 EarthworkCalculations.Section(distance,a2)
             )
-            "SEÇÃO 1\\\\nCorte: \${fmt(a1.cutArea)} m² | Aterro: \${fmt(a1.fillArea)} m²\\\\n" +
-                "SEÇÃO 2\\\\nCorte: \${fmt(a2.cutArea)} m² | Aterro: \${fmt(a2.fillArea)} m²\\\\n" +
-                "VOLUMES (áreas médias)\\\\nCorte: \${fmt(volume.cutVolume)} m³\\\\nAterro: \${fmt(volume.fillVolume)} m³"
-        }.getOrElse { "Erro: \${it.message}" }
+            "SEÇÃO 1\\\nCorte: ${fmt(a1.cutArea)} m² | Aterro: ${fmt(a1.fillArea)} m²\\\n" +
+                "SEÇÃO 2\\\nCorte: ${fmt(a2.cutArea)} m² | Aterro: ${fmt(a2.fillArea)} m²\\\n" +
+                "VOLUMES (áreas médias)\\\nCorte: ${fmt(volume.cutVolume)} m³\\\nAterro: ${fmt(volume.fillVolume)} m³"
+        }.getOrElse { "Erro: ${it.message}" }
     }, modifier = Modifier.fillMaxWidth()) { Text("CALCULAR ÁREAS E VOLUMES") }
     result?.let { ResultCard(it) }
 }
