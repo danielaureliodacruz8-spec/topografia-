@@ -129,7 +129,7 @@ private fun NumberField(label: String, value: String, onValue: (String) -> Unit)
     OutlinedTextField(value = value, onValueChange = onValue, label = { Text(label) }, modifier = Modifier.fillMaxWidth(), singleLine = true)
 }
 
-private fun parse(value: String): Double? = value.trim().replace(",", ".").toDoubleOrNull()
+private fun parse(value: String): Double? = value.trim().replace(",", ".").toDoubleOrNull()?.takeIf { it.isFinite() }
 private fun fmt(value: Double): String = String.format(Locale("pt", "BR"), "%.4f", value)
 
 @Composable
