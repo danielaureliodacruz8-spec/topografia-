@@ -10,7 +10,7 @@ Protótipo técnico em desenvolvimento, versão 0.1.0. A estrutura Android nativ
 - Cálculo direto e inverso de coordenadas;
 - Poligonal fechada por ângulos internos, compensação angular uniforme e Bowditch;
 - Poligonal aberta enquadrada por deflexões assinadas e Bowditch;
-- Nivelamento geométrico e caderneta com ré, intermediárias, vante, HI, cotas e compensação;
+- Nivelamento geométrico simples e caderneta composta com ré, intermediárias, vante, HI, cotas e conferência aritmética;
 - Curvas circulares simples e curvas verticais parabólicas;
 - Seções transversais, áreas de corte/aterro, volumes por áreas médias e prismoidal;
 - Plataforma rodoviária e encontro de taludes por interpolação;
@@ -23,11 +23,11 @@ Protótipo técnico em desenvolvimento, versão 0.1.0. A estrutura Android nativ
 - Nivelamento geométrico simples;
 - Conversor de estacas;
 - Irradiação por estação total;
-- Resseção por distâncias com três pontos de apoio.
+- Caderneta de nivelamento composto com múltiplas estações e leituras intermediárias;\n- Resseção por distâncias com três pontos de apoio;\n- Cadastro, importação e exportação CSV de pontos, com persistência local no Android.
 
 ## Limitações importantes
 
-Ainda não é uma versão 100% concluída nem liberada para uso operacional em obra. Os módulos matemáticos não estão todos integrados às telas. A importação CSV ainda precisa de uma interface de seleção de arquivo e não substitui a validação dos formatos reais de cada coletora. KML/KMZ/DXF/PDF, GNSS/RTK, mapas, relatórios, banco de projetos, backup, integração com provedores de IA e Modo Estrada ainda estão pendentes.
+Ainda não é uma versão 100% concluída nem liberada para uso operacional em obra. Os módulos matemáticos não estão todos integrados às telas. A importação CSV já possui interface de seleção de arquivo e cadastro local de pontos, mas ainda precisa ser validada com formatos reais de cada coletora. KML/KMZ/DXF/PDF, GNSS/RTK, mapas, relatórios, banco de projetos, backup, integração com provedores de IA e Modo Estrada ainda estão pendentes.
 
 Não liberar locações ou medições com base apenas no aplicativo sem conferência independente por profissional habilitado, incluindo datum, fuso, unidades, revisão do projeto, orientação, alturas, tolerâncias e memória de cálculo.
 
