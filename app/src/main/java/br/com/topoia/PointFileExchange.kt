@@ -19,7 +19,7 @@ object PointFileExchange {
         val points = lines.drop(1).mapIndexed { index, line ->
             val fields = splitLine(line, delimiter)
             fun field(i: Int): String = fields.getOrNull(i)?.trim().orEmpty()
-            val name = if (nameIndex >= 0) field(nameIndex).ifBlank { "P\${index + 1}" } else "P\${index + 1}"
+            val name = if (nameIndex >= 0) field(nameIndex).ifBlank { "P${index + 1}" } else "P${index + 1}"
             val east = parseNumber(field(eastIndex), decimalComma)
             val north = parseNumber(field(northIndex), decimalComma)
             val elevation = if (elevationIndex >= 0 && field(elevationIndex).isNotBlank())
@@ -82,7 +82,7 @@ object PointFileExchange {
 
     private fun escape(value: String): String =
         if (value.contains(',') || value.contains('"') || value.contains('\n'))
-            "\"\${value.replace("\"", "\"\"")}\"" else value
+            "\"${value.replace("\"", "\"\"")}\"" else value
 
     private fun format(value: Double): String = String.format(Locale.US, "%.4f", value)
 }
