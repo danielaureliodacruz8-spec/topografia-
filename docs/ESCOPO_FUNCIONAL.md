@@ -13,17 +13,17 @@
 3. Nivelamento: simples, composto, intermediário, contranivelamento, fechamento e compensação.
 4. Estação total: irradiação, locação, redução de distância inclinada, alturas de instrumento/prisma e resseção.
 5. Geometria rodoviária: estaqueamento, curvas horizontais/verticais, greide, superelevação e seções.
-6. Terraplenagem: seções transversais por offsets e diferenças projeto-terreno, separação de áreas de corte/aterro com interpolação do cruzamento, volumes por áreas médias, prismoidal e volumes acumulados separados.
-7. Drenagem: cotas, declividades, dimensões e conferências de projeto.
-8. GNSS/RTK e geodésia: sistemas de referência, transformação e qualidade posicional.
-9. Arquivos: CSV/TXT/KML/KMZ/DXF e PDF; formatos avançados exigem bibliotecas e testes.
-10. Modo Estrada: leitura de nota de serviço, associação por estaca/seção, orientação de off-set e acompanhamento.
-11. IA: assistente técnico com conhecimento validado e conectores configuráveis a provedores externos.
+6. Terraplenagem: seções transversais por offsets e diferenças projeto-terreno, separação de áreas de corte/aterro com interpolação do cruzamento, volumes por áreas médias, prismoidal e volumes acumulados separados.\n7. Seções rodoviárias: bordas de plataforma por largura e caimento transversal; encontro de taludes de corte/aterro com terreno por interpolação linear e relação H:V configurável.
+8. Drenagem: cotas, declividades, dimensões e conferências de projeto.
+9. GNSS/RTK e geodésia: sistemas de referência, transformação e qualidade posicional.
+10. Arquivos: CSV/TXT/KML/KMZ/DXF e PDF; formatos avançados exigem bibliotecas e testes.
+11. Modo Estrada: leitura de nota de serviço, associação por estaca/seção, orientação de off-set e acompanhamento.
+12. IA: assistente técnico com conhecimento validado e conectores configuráveis a provedores externos.
 
 ## Estado
-Versão 0.1.0: estrutura Android inicial, cálculos básicos, poligonal fechada com compensação angular e Bowditch, nivelamento composto/caderneta, geometria de curvas rodoviárias e núcleo de seções/terraplenagem.
+Versão 0.1.0: estrutura Android inicial, cálculos básicos, poligonal fechada com compensação angular e Bowditch, nivelamento composto/caderneta, geometria de curvas rodoviárias e núcleo de seções/terraplenagem, bordas de plataforma e cálculo de off-set de encontro de taludes.
 Implementado nesta etapa: curva circular simples (T, desenvolvimento, corda longa, externa, flecha, PC/PT), curva vertical parabólica simétrica (PVC/PVI/PVT, cotas, K) e conversão de distância acumulada em estaca com intervalo configurável.
-Próximas etapas: poligonais abertas/enquadradas, estação total, superelevação, taludes paramétricos, integração de arquivos e interface de campo.
+Próximas etapas: poligonais abertas/enquadradas, estação total, superelevação variável por estaca, drenagem, integração de arquivos e interface de campo.
 
 ## Critérios antes de uso em obra
 - Testes unitários com casos conhecidos e validação independente.
