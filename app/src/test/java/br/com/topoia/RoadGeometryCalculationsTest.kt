@@ -25,7 +25,7 @@ class RoadGeometryCalculationsTest {
         assertEquals(1050.0, c.pvtStation, 1e-9)
         assertEquals(499.0, c.pvcElevation, 1e-9)
         assertEquals(499.0, c.pvtElevation, 1e-9)
-        assertEquals(0.0, c.kValue, 1e-9) // K = L/A; checked below with corrected expected value
+        assertEquals(25.0, c.kValue, 1e-9)
         assertEquals(500.0, RoadGeometryCalculations.verticalElevation(c, 50.0), 1e-9)
     }
 
