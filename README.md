@@ -20,6 +20,7 @@ Protótipo técnico em desenvolvimento, versão 0.1.0. A estrutura Android nativ
 
 ### Telas Android disponíveis
 - Cálculo inverso;
+- Poligonal por azimutes/distâncias com compensação Bowditch;
 - Nivelamento geométrico simples;
 - Conversor de estacas;
 - Irradiação por estação total;
@@ -27,6 +28,7 @@ Protótipo técnico em desenvolvimento, versão 0.1.0. A estrutura Android nativ
 - Resseção por distâncias com três pontos de apoio;
 - Curvas horizontais e verticais rodoviárias;
 - Áreas de seções transversais e volumes por áreas médias;
+- Curvas horizontais/verticais e cálculo de terraplenagem;
 - Cadastro, importação e exportação CSV de pontos, com persistência local no Android.
 
 ## Limitações importantes
