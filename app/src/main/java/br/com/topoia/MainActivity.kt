@@ -85,7 +85,8 @@ private fun Dashboard() {
         when (selected) {
             "Coordenadas" -> InverseCalculator()
             "Nivelamento" -> LevelCalculator()
-            "Estacas" -> StationCalculator()\n            "Estação total" -> TotalStationCalculator()
+            "Estacas" -> StationCalculator()
+            "Estação total" -> TotalStationCalculator()
             else -> HomeModules()
         }
     }
@@ -97,7 +98,8 @@ private fun HomeModules() {
     val items = listOf(
         "Poligonais e ajustamento" to "Ângulos, azimutes, distâncias, fechamento e coordenadas.",
         "Coordenadas" to "Cálculo inverso e irradiação de pontos.",
-        "Nivelamento" to "Ré, vante, altura do instrumento, cotas e desníveis.",\n        "Estação total" to "Irradiação por azimute e distância horizontal; redução e locação em expansão.",
+        "Nivelamento" to "Ré, vante, altura do instrumento, cotas e desníveis.",
+        "Estação total" to "Irradiação por azimute e distância horizontal; redução e locação em expansão.",
         "Geometria rodoviária" to "Estaqueamento, curvas, greide, rampas e superelevação.",
         "Terraplenagem e drenagem" to "Corte, aterro, volumes, taludes e dispositivos.",
         "Modo Estrada + IA" to "Leitura de nota de serviço, coletora e orientação de locação."
