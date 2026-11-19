@@ -1,0 +1,29 @@
+workflows:
+  topo-ia-android:
+    name: TOPO IA - Android APK
+    max_build_duration: 60
+    environment:
+      vars:
+        PACKAGE_NAME: "br.com.topoia"
+    scripts:
+      - name: Configure Android SDK
+        script: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
+          java -version
+      - name: Install Gradle 8.9
+        script: |
+          set -e
+          curl -L --fail --retry 3 https://services.gradle.org/distributions/gradle-8.9-bin.zip -o /tmp/gradle-8.9-bin.zip
+          unzip -q /tmp/gradle-8.9-bin.zip -d /tmp
+          /tmp/gradle-8.9/bin/gradle --version
+      - name: Run unit tests
+        script: |
+          set -e
+          /tmp/gradle-8.9/bin/gradle --no-daemon test
+      - name: Build Android debug APK
+        script: |
+          set -e
+          /tmp/gradle-8.9/bin/gradle --no-daemon assembleDebug
+    artifacts:
+      - app/build/outputs/apk/debug/*.apk
+      - app/build/reports/tests/test/**/*.html
