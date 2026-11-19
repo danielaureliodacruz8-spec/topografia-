@@ -360,12 +360,14 @@ private fun PointFileScreen() {
 private fun LevelBookCalculator() {
     var startPoint by remember { mutableStateOf("RN-01") }
     var startElevation by remember { mutableStateOf("100.000") }
+    var closingElevation by remember { mutableStateOf("") }
     var rows by remember { mutableStateOf("RN-01;1.455;;PM-01;2.130;100") }
     var result by remember { mutableStateOf<String?>(null) }
     Text("Caderneta de nivelamento composto", fontSize = 19.sp, fontWeight = FontWeight.Bold)
     Text("Uma estação por linha: ponto ré;leitura ré;intermediárias; ponto vante;leitura vante;distância. Intermediárias: P1:1.234|P2:1.456.", color = Color.LightGray, fontSize = 12.sp)
     NumberField("Ponto de referência", startPoint) { startPoint = it }
     NumberField("Cota conhecida do RN (m)", startElevation) { startElevation = it }
+    NumberField("Cota conhecida no ponto final (opcional, para fechamento)", closingElevation) { closingElevation = it }
     OutlinedTextField(
         value = rows,
         onValueChange = { rows = it },
@@ -392,8 +394,23 @@ private fun LevelBookCalculator() {
                 )
             }.toList()
             val r = NivelamentoCaderneta.calculate(startPoint.trim(), elevation, stations)
+            val knownEnd = if (closingElevation.isBlank()) null else parse(closingElevation) ?: error("Cota final conhecida inválida.")
+            val correctedTurningPoints = if (knownEnd != null) {
+                val rawElevations = listOf(elevation) + r.points.filter { it.type == "Vante" }.map { it.elevation }
+                val cumulative = listOf(0.0) + stations.runningFold(0.0) { total, station -> total + station.distanceMeters }.drop(1)
+                NivelamentoCaderneta.compensate(rawElevations, cumulative, r.finalElevation - knownEnd)
+            } else emptyList()
             buildString {
-                append("Cota final: ${fmt(r.finalElevation)} m\n")
+                append("Cota final calculada: ${fmt(r.finalElevation)} m\n")
+                if (knownEnd != null) {
+                    append("Cota final conhecida: ${fmt(knownEnd)} m\n")
+                    append("Erro de fechamento: ${fmt(r.finalElevation - knownEnd)} m\n")
+                    append("Pontos de mudança compensados por distância:\n")
+                    correctedTurningPoints.drop(1).forEachIndexed { index, value ->
+                        append("${stations[index].foresightPoint}: ${fmt(value)} m\n")
+                    }
+                    append("Visadas intermediárias não foram compensadas: informe a distância individual de cada ponto para isso.\n")
+                } else append("Sem cota final conhecida: fechamento não calculado.\n")
                 append("Σ ré: ${fmt(r.sumBacksights)} m | Σ vante: ${fmt(r.sumForesights)} m\n")
                 append("Conferência: ${fmt(r.arithmeticCheck)} m\n")
                 append("Distância acumulada: ${fmt(r.totalDistanceMeters)} m\n\n")
