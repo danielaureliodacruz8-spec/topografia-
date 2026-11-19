@@ -86,7 +86,8 @@ private fun Dashboard() {
             "Coordenadas" -> InverseCalculator()
             "Nivelamento" -> LevelCalculator()
             "Estacas" -> StationCalculator()
-            "Estação total" -> TotalStationCalculator()\n            "Resseção" -> ResectionCalculator()
+            "Estação total" -> TotalStationCalculator()
+            "Resseção" -> ResectionCalculator()
             else -> HomeModules()
         }
     }
