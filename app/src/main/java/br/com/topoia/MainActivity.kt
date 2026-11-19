@@ -61,7 +61,7 @@ fun TopoIAApp() {
 @Composable
 private fun Dashboard() {
     var selected by remember { mutableStateOf("Início") }
-    val modules = listOf("Início", "Coordenadas", "Nivelamento", "Estacas", "Estação total")
+    val modules = listOf("Início", "Coordenadas", "Nivelamento", "Estacas", "Estação total", "Resseção")
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp)) {
         Text("TOPO IA", fontSize = 30.sp, fontWeight = FontWeight.Bold, color = Cyan)
         Text("Central inteligente de topografia", color = Color.LightGray)
@@ -86,7 +86,7 @@ private fun Dashboard() {
             "Coordenadas" -> InverseCalculator()
             "Nivelamento" -> LevelCalculator()
             "Estacas" -> StationCalculator()
-            "Estação total" -> TotalStationCalculator()
+            "Estação total" -> TotalStationCalculator()\n            "Resseção" -> ResectionCalculator()
             else -> HomeModules()
         }
     }
@@ -210,5 +210,56 @@ private fun TotalStationCalculator() {
             "Ponto calculado\nE: ${fmt(point.east)} m\nN: ${fmt(point.north)} m\nDistância: ${fmt(d)} m\nAzimute: ${fmt(((a % 360.0) + 360.0) % 360.0)}°"
         } else "Confira os valores. A distância não pode ser negativa."
     }, modifier = Modifier.fillMaxWidth()) { Text("CALCULAR PONTO") }
+    result?.let { ResultCard(it) }
+}
+
+@Composable
+private fun ResectionCalculator() {
+    var e1 by remember { mutableStateOf("0") }
+    var n1 by remember { mutableStateOf("0") }
+    var d1 by remember { mutableStateOf("50") }
+    var e2 by remember { mutableStateOf("100") }
+    var n2 by remember { mutableStateOf("0") }
+    var d2 by remember { mutableStateOf("78.1025") }
+    var e3 by remember { mutableStateOf("0") }
+    var n3 by remember { mutableStateOf("100") }
+    var d3 by remember { mutableStateOf("80.6226") }
+    var initialE by remember { mutableStateOf("35") }
+    var initialN by remember { mutableStateOf("25") }
+    var result by remember { mutableStateOf<String?>(null) }
+    Text("Resseção por distâncias", fontSize = 19.sp, fontWeight = FontWeight.Bold)
+    Text("Informe três ou mais pontos de apoio conhecidos e as distâncias medidas da estação desconhecida. Esta tela usa três apoios.", color = Color.LightGray, fontSize = 12.sp)
+    Text("Apoio 1", color = Cyan, fontWeight = FontWeight.Bold)
+    NumberField("E do apoio 1", e1) { e1 = it }
+    NumberField("N do apoio 1", n1) { n1 = it }
+    NumberField("Distância medida até apoio 1 (m)", d1) { d1 = it }
+    Text("Apoio 2", color = Cyan, fontWeight = FontWeight.Bold)
+    NumberField("E do apoio 2", e2) { e2 = it }
+    NumberField("N do apoio 2", n2) { n2 = it }
+    NumberField("Distância medida até apoio 2 (m)", d2) { d2 = it }
+    Text("Apoio 3", color = Cyan, fontWeight = FontWeight.Bold)
+    NumberField("E do apoio 3", e3) { e3 = it }
+    NumberField("N do apoio 3", n3) { n3 = it }
+    NumberField("Distância medida até apoio 3 (m)", d3) { d3 = it }
+    Text("Estimativa inicial da estação", color = Cyan, fontWeight = FontWeight.Bold)
+    NumberField("E aproximado", initialE) { initialE = it }
+    NumberField("N aproximado", initialN) { initialN = it }
+    Button(onClick = {
+        val v = listOf(e1,n1,d1,e2,n2,d2,e3,n3,d3,initialE,initialN).map { parse(it) }
+        result = if (v.all { it != null }) {
+            runCatching {
+                val a = v.map { it!! }
+                val r = ResectionCalculations.byDistances(
+                    listOf(
+                        ResectionCalculations.DistanceObservation("A1",a[0],a[1],a[2]),
+                        ResectionCalculations.DistanceObservation("A2",a[3],a[4],a[5]),
+                        ResectionCalculations.DistanceObservation("A3",a[6],a[7],a[8])
+                    ), a[9], a[10]
+                )
+                if (!r.converged) "Não convergiu. Reveja as medidas e a estimativa inicial."
+                else "Estação calculada\\nE: ${fmt(r.east)} m\\nN: ${fmt(r.north)} m\\nRMS dos resíduos: ${fmt(r.rmsResidual)} m\\nIterações: ${r.iterations}"
+            }.getOrElse { "Não foi possível calcular: ${it.message}" }
+        } else "Confira todos os valores numéricos."
+    }, modifier = Modifier.fillMaxWidth()) { Text("CALCULAR RESSEÇÃO") }
     result?.let { ResultCard(it) }
 }
