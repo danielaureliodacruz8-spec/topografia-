@@ -424,8 +424,8 @@ private fun RoadGeometryCalculator() {
         val r = parse(radius); val a = parse(delta); val pi = parse(piStation)
         horizontalResult = if (r != null && a != null && pi != null) runCatching {
             val curve = RoadGeometryCalculations.horizontalCurve(r, a, pi)
-            "Tangente: \${fmt(curve.tangent)} m\\nDesenvolvimento: \${fmt(curve.development)} m\\nCorda longa: \${fmt(curve.longChord)} m\\nExterna: \${fmt(curve.external)} m\\nOrdenada média: \${fmt(curve.middleOrdinate)} m\\nPC: \${fmt(curve.pcStation)} m (\${RoadGeometryCalculations.stationLabel(curve.pcStation)})\\nPT: \${fmt(curve.ptStation)} m (\${RoadGeometryCalculations.stationLabel(curve.ptStation)})"
-        }.getOrElse { "Erro: \${it.message}" } else "Confira os dados da curva."
+            "Tangente: ${fmt(curve.tangent)} m\nDesenvolvimento: ${fmt(curve.development)} m\nCorda longa: ${fmt(curve.longChord)} m\nExterna: ${fmt(curve.external)} m\nOrdenada média: ${fmt(curve.middleOrdinate)} m\nPC: ${fmt(curve.pcStation)} m (${RoadGeometryCalculations.stationLabel(curve.pcStation)})\nPT: ${fmt(curve.ptStation)} m (${RoadGeometryCalculations.stationLabel(curve.ptStation)})"
+        }.getOrElse { "Erro: ${it.message}" } else "Confira os dados da curva."
     }, modifier = Modifier.fillMaxWidth()) { Text("CALCULAR CURVA HORIZONTAL") }
     horizontalResult?.let { ResultCard(it) }
 
@@ -441,8 +441,8 @@ private fun RoadGeometryCalculator() {
             val v = values.map { it!! }
             val curve = RoadGeometryCalculations.verticalCurve(v[0],v[1],v[2],v[3],v[4])
             val mid = RoadGeometryCalculations.verticalElevation(curve, curve.length / 2.0)
-            "PVC: \${fmt(curve.pvcStation)} m | cota \${fmt(curve.pvcElevation)} m\\nPVI: \${fmt(curve.pviStation)} m | cota \${fmt(curve.pviElevation)} m\\nPVT: \${fmt(curve.pvtStation)} m | cota \${fmt(curve.pvtElevation)} m\\nK: \${fmt(curve.kValue)} m/%\\nCota no meio da curva: \${fmt(mid)} m"
-        }.getOrElse { "Erro: \${it.message}" } else "Confira os dados da curva vertical."
+            "PVC: ${fmt(curve.pvcStation)} m | cota ${fmt(curve.pvcElevation)} m\nPVI: ${fmt(curve.pviStation)} m | cota ${fmt(curve.pviElevation)} m\nPVT: ${fmt(curve.pvtStation)} m | cota ${fmt(curve.pvtElevation)} m\nK: ${fmt(curve.kValue)} m/%\nCota no meio da curva: ${fmt(mid)} m"
+        }.getOrElse { "Erro: ${it.message}" } else "Confira os dados da curva vertical."
     }, modifier = Modifier.fillMaxWidth()) { Text("CALCULAR CURVA VERTICAL") }
     verticalResult?.let { ResultCard(it) }
 }
