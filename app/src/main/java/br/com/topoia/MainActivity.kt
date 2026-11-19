@@ -64,7 +64,7 @@ fun TopoIAApp() {
 @Composable
 private fun Dashboard() {
     var selected by remember { mutableStateOf("Início") }
-    val modules = listOf("Início", "Coordenadas", "Nivelamento", "Estacas", "Estação total", "Resseção", "Arquivos")
+    val modules = listOf("Início", "Coordenadas", "Nivelamento", "Caderneta", "Estacas", "Estação total", "Resseção", "Arquivos")
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp)) {
         Text("TOPO IA", fontSize = 30.sp, fontWeight = FontWeight.Bold, color = Cyan)
         Text("Central inteligente de topografia", color = Color.LightGray)
@@ -88,6 +88,7 @@ private fun Dashboard() {
         when (selected) {
             "Coordenadas" -> InverseCalculator()
             "Nivelamento" -> LevelCalculator()
+            "Caderneta" -> LevelBookCalculator()
             "Estacas" -> StationCalculator()
             "Estação total" -> TotalStationCalculator()
             "Resseção" -> ResectionCalculator()
@@ -348,4 +349,53 @@ private fun PointFileScreen() {
             (point.elevation?.let { " | H ${fmt(it)}" } ?: ""), color = Color.LightGray, fontSize = 12.sp)
     }
     if (points.size > 20) Text("Exibindo os últimos 20 pontos.", color = Color.Gray, fontSize = 11.sp)
+}
+
+
+@Composable
+private fun LevelBookCalculator() {
+    var startPoint by remember { mutableStateOf("RN-01") }
+    var startElevation by remember { mutableStateOf("100.000") }
+    var rows by remember { mutableStateOf("RN-01;1.455;;PM-01;2.130;100") }
+    var result by remember { mutableStateOf<String?>(null) }
+    Text("Caderneta de nivelamento composto", fontSize = 19.sp, fontWeight = FontWeight.Bold)
+    Text("Uma estação por linha: ponto ré;leitura ré;intermediárias; ponto vante;leitura vante;distância. Intermediárias: P1:1.234|P2:1.456.", color = Color.LightGray, fontSize = 12.sp)
+    NumberField("Ponto de referência", startPoint) { startPoint = it }
+    NumberField("Cota conhecida do RN (m)", startElevation) { startElevation = it }
+    OutlinedTextField(
+        value = rows,
+        onValueChange = { rows = it },
+        label = { Text("Estações da caderneta") },
+        modifier = Modifier.fillMaxWidth(),
+        minLines = 5
+    )
+    Button(onClick = {
+        val elevation = parse(startElevation)
+        result = if (elevation == null || startPoint.isBlank()) "Informe o RN e sua cota."
+        else runCatching {
+            val stations = rows.lineSequence().filter { it.isNotBlank() }.mapIndexed { index, line ->
+                val f = line.split(';')
+                require(f.size == 6) { "Linha \${index + 1}: informe seis campos separados por ponto e vírgula." }
+                val intermediates = if (f[2].isBlank()) emptyList() else f[2].split('|').map { item ->
+                    val pair = item.split(':')
+                    require(pair.size == 2) { "Intermediária inválida na linha \${index + 1}." }
+                    NivelamentoCaderneta.IntermediateSight(pair[0].trim(), parse(pair[1]) ?: error("Leitura intermediária inválida."))
+                }
+                NivelamentoCaderneta.Station(
+                    f[0].trim(), parse(f[1]) ?: error("Leitura de ré inválida."),
+                    intermediates, f[3].trim(), parse(f[4]) ?: error("Leitura de vante inválida."),
+                    parse(f[5]) ?: error("Distância inválida.")
+                )
+            }.toList()
+            val r = NivelamentoCaderneta.calculate(startPoint.trim(), elevation, stations)
+            buildString {
+                append("Cota final: \${fmt(r.finalElevation)} m\\n")
+                append("Σ ré: \${fmt(r.sumBacksights)} m | Σ vante: \${fmt(r.sumForesights)} m\\n")
+                append("Conferência: \${fmt(r.arithmeticCheck)} m\\n")
+                append("Distância acumulada: \${fmt(r.totalDistanceMeters)} m\\n\\n")
+                r.points.drop(1).forEach { append("\${it.point} (\${it.type}): \${fmt(it.elevation)} m | HI: \${fmt(it.instrumentHeight)} m\\n") }
+            }
+        }.getOrElse { "Erro na caderneta: \${it.message}" }
+    }, modifier = Modifier.fillMaxWidth()) { Text("CALCULAR CADERNETA") }
+    result?.let { ResultCard(it) }
 }
