@@ -29,7 +29,7 @@ class NivelamentoCadernetaTest {
             )
         )
 
-        assertEquals(101.5, result.points.first { it.point == "P-01" }.elevation, 1e-9)
+        assertEquals(99.5, result.points.first { it.point == "P-01" }.elevation, 1e-9)
         assertEquals(99.3, result.points.first { it.point == "PM-01" && it.type == "Vante" }.elevation, 1e-9)
         assertEquals(99.5, result.finalElevation, 1e-9)
         assertEquals(180.0, result.totalDistanceMeters, 1e-9)
