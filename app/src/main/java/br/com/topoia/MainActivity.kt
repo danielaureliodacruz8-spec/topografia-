@@ -3,6 +3,8 @@ package br.com.topoia
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,6 +28,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,7 +64,7 @@ fun TopoIAApp() {
 @Composable
 private fun Dashboard() {
     var selected by remember { mutableStateOf("Início") }
-    val modules = listOf("Início", "Coordenadas", "Nivelamento", "Estacas", "Estação total", "Resseção")
+    val modules = listOf("Início", "Coordenadas", "Nivelamento", "Estacas", "Estação total", "Resseção", "Arquivos")
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp)) {
         Text("TOPO IA", fontSize = 30.sp, fontWeight = FontWeight.Bold, color = Cyan)
         Text("Central inteligente de topografia", color = Color.LightGray)
@@ -88,6 +91,7 @@ private fun Dashboard() {
             "Estacas" -> StationCalculator()
             "Estação total" -> TotalStationCalculator()
             "Resseção" -> ResectionCalculator()
+            "Arquivos" -> PointFileScreen()
             else -> HomeModules()
         }
     }
@@ -263,4 +267,75 @@ private fun ResectionCalculator() {
         } else "Confira todos os valores numéricos."
     }, modifier = Modifier.fillMaxWidth()) { Text("CALCULAR RESSEÇÃO") }
     result?.let { ResultCard(it) }
+}
+
+
+@Composable
+private fun PointFileScreen() {
+    val context = LocalContext.current
+    val points = remember { mutableStateListOf<PointFileExchange.Point>() }
+    var name by remember { mutableStateOf("P1") }
+    var east by remember { mutableStateOf("") }
+    var north by remember { mutableStateOf("") }
+    var elevation by remember { mutableStateOf("") }
+    var status by remember { mutableStateOf("Adicione pontos ou importe um arquivo CSV/TXT com cabeçalho.") }
+
+    val importLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri != null) {
+            status = runCatching {
+                val content = context.contentResolver.openInputStream(uri)?.bufferedReader()?.use { it.readText() }
+                    ?: error("Não foi possível abrir o arquivo.")
+                val imported = PointFileExchange.parse(content)
+                points.clear()
+                points.addAll(imported)
+                "Importados \${imported.size} pontos com sucesso."
+            }.getOrElse { "Falha na importação: \${it.message}" }
+        }
+    }
+    val exportLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("text/csv")
+    ) { uri ->
+        if (uri != null) {
+            status = runCatching {
+                val csv = PointFileExchange.exportCsv(points.toList())
+                context.contentResolver.openOutputStream(uri)?.bufferedWriter()?.use { it.write(csv) }
+                    ?: error("Não foi possível gravar o arquivo.")
+                "Arquivo CSV exportado com \${points.size} pontos."
+            }.getOrElse { "Falha na exportação: \${it.message}" }
+        }
+    }
+
+    Text("Cadastro e arquivos de pontos", fontSize = 19.sp, fontWeight = FontWeight.Bold)
+    Text("Coordenadas em metros. CSV/TXT com colunas Nome, Este/E, Norte/N e Cota/H.", color = Color.LightGray, fontSize = 12.sp)
+    NumberField("Nome do ponto", name) { name = it }
+    NumberField("Este (E)", east) { east = it }
+    NumberField("Norte (N)", north) { north = it }
+    NumberField("Cota / H (opcional)", elevation) { elevation = it }
+    Button(onClick = {
+        val e = parse(east); val n = parse(north)
+        val h = if (elevation.isBlank()) null else parse(elevation)
+        if (name.isBlank() || e == null || n == null || (elevation.isNotBlank() && h == null)) {
+            status = "Confira nome e coordenadas. Use números válidos."
+        } else if (points.any { it.name == name.trim() }) {
+            status = "Já existe um ponto com esse nome."
+        } else {
+            points.add(PointFileExchange.Point(name.trim(), e, n, h))
+            name = "P\${points.size + 1}"; east = ""; north = ""; elevation = ""
+            status = "Ponto adicionado."
+        }
+    }, modifier = Modifier.fillMaxWidth()) { Text("ADICIONAR PONTO") }
+
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Button(onClick = { importLauncher.launch(arrayOf("text/*", "application/*")) }) { Text("IMPORTAR") }
+        Button(onClick = { exportLauncher.launch("pontos_topograficos.csv") }, enabled = points.isNotEmpty()) { Text("EXPORTAR CSV") }
+    }
+    Text(status, color = Cyan, fontSize = 13.sp)
+    Text("Pontos cadastrados: \${points.size}", fontWeight = FontWeight.Bold)
+    points.takeLast(20).forEach { point ->
+        Text("\${point.name} | E \${fmt(point.east)} | N \${fmt(point.north)}" +
+            (point.elevation?.let { " | H \${fmt(it)}" } ?: ""), color = Color.LightGray, fontSize = 12.sp)
+    }
+    if (points.size > 20) Text("Exibindo os últimos 20 pontos.", color = Color.Gray, fontSize = 11.sp)
 }
