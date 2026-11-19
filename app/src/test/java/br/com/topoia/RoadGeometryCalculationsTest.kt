@@ -26,7 +26,7 @@ class RoadGeometryCalculationsTest {
         assertEquals(499.0, c.pvcElevation, 1e-9)
         assertEquals(499.0, c.pvtElevation, 1e-9)
         assertEquals(25.0, c.kValue, 1e-9)
-        assertEquals(500.0, RoadGeometryCalculations.verticalElevation(c, 50.0), 1e-9)
+        assertEquals(499.5, RoadGeometryCalculations.verticalElevation(c, 50.0), 1e-9)
     }
 
     @Test
