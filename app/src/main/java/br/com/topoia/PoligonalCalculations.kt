@@ -98,6 +98,45 @@ object PoligonalCalculations {
         return AngularAdjustment(adjusted, misclosure, correction, azimuths, linear)
     }
 
+    data class OpenAdjustment(
+        val azimuthsDegrees: List<Double>,
+        val coordinateResult: AdjustedResult
+    )
+
+    /**
+     * Poligonal aberta enquadrada por coordenadas conhecidas no início e no fim.
+     * Deflexões são assinadas: positivas para a direita (horário), negativas para a esquerda.
+     * A primeira direção é o azimute inicial; cada deflexão orienta o lado seguinte.
+     * O fechamento linear é compensado pelo método de Bowditch.
+     */
+    fun openFromDeflectionAngles(
+        start: Coordinate,
+        end: Coordinate,
+        distances: List<Double>,
+        deflectionsDegrees: List<Double>,
+        initialAzimuthDegrees: Double
+    ): OpenAdjustment {
+        require(distances.isNotEmpty()) { "Informe pelo menos um lado." }
+        require(deflectionsDegrees.size == distances.size - 1) {
+            "Informe uma deflexão entre cada par de lados consecutivos."
+        }
+        require(distances.all { it.isFinite() && it > 0.0 }) { "Distâncias devem ser positivas e finitas." }
+        require(deflectionsDegrees.all { it.isFinite() }) { "Deflexões devem ser finitas." }
+        require(initialAzimuthDegrees.isFinite()) { "Azimute inicial inválido." }
+        require(start.easting.isFinite() && start.northing.isFinite() &&
+            end.easting.isFinite() && end.northing.isFinite()) { "Coordenadas de apoio inválidas." }
+
+        val azimuths = MutableList(distances.size) { 0.0 }
+        azimuths[0] = normalizeAzimuth(initialAzimuthDegrees)
+        for (i in 1 until distances.size) {
+            azimuths[i] = normalizeAzimuth(azimuths[i - 1] + deflectionsDegrees[i - 1])
+        }
+        val sides = distances.indices.map { i ->
+            Side("P${i + 1}", distances[i], azimuths[i])
+        }
+        return OpenAdjustment(azimuths, bowditch(start, sides, end))
+    }
+
     private fun normalizeAzimuth(value: Double): Double = (value % 360.0 + 360.0) % 360.0
 
     fun azimuthFromCoordinates(e1: Double, n1: Double, e2: Double, n2: Double): Double {
