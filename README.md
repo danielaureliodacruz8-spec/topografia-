@@ -10,7 +10,7 @@ Protótipo técnico em desenvolvimento, versão 0.1.0. A estrutura Android nativ
 - Cálculo direto e inverso de coordenadas;
 - Poligonal fechada por ângulos internos, compensação angular uniforme e Bowditch;
 - Poligonal aberta enquadrada por deflexões assinadas e Bowditch;
-- Nivelamento geométrico simples e caderneta composta com ré, intermediárias, vante, HI, cotas e conferência aritmética;
+- Nivelamento geométrico simples e caderneta composta com ré, intermediárias, vante, HI, cotas, conferência aritmética e compensação do fechamento dos pontos de mudança por distância acumulada quando a cota final conhecida é informada;
 - Curvas circulares simples e curvas verticais parabólicas;
 - Seções transversais, áreas de corte/aterro, volumes por áreas médias e prismoidal;
 - Plataforma rodoviária e encontro de taludes por interpolação;
@@ -44,7 +44,7 @@ Não liberar locações ou medições com base apenas no aplicativo sem conferê
 - Registrar entradas, método, resultados, resíduos e alertas.
 
 ## Como abrir
-Abra o repositório no Android Studio, sincronize o Gradle e execute o módulo `app`. O projeto usa JDK 17 e Gradle 8.9.
+Abra o repositório no Android Studio, sincronize o Gradle e execute o módulo `app`. O projeto usa JDK 17 e Gradle 8.9. O workflow do GitHub Actions executa testes, monta o APK debug e publica o arquivo como artefato quando a infraestrutura de execução está disponível. Também pode ser iniciado manualmente pela aba Actions.
 
 ## Próximas etapas
 1. Validar os novos módulos no CI e corrigir falhas;
