@@ -64,7 +64,7 @@ fun TopoIAApp() {
 @Composable
 private fun Dashboard() {
     var selected by remember { mutableStateOf("Início") }
-    val modules = listOf("Início", "Coordenadas", "Nivelamento", "Caderneta", "Estacas", "Estação total", "Resseção", "Rodovia", "Terraplenagem", "Arquivos")
+    val modules = listOf("Início", "Poligonal", "Coordenadas", "Nivelamento", "Caderneta", "Estacas", "Estação total", "Resseção", "Rodovia", "Terraplenagem", "Arquivos")
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp)) {
         Text("TOPO IA", fontSize = 30.sp, fontWeight = FontWeight.Bold, color = Cyan)
         Text("Central inteligente de topografia", color = Color.LightGray)
@@ -86,6 +86,7 @@ private fun Dashboard() {
         }
         Spacer(Modifier.height(18.dp))
         when (selected) {
+            "Poligonal" -> TraverseCalculator()
             "Coordenadas" -> InverseCalculator()
             "Nivelamento" -> LevelCalculator()
             "Caderneta" -> LevelBookCalculator()
@@ -483,5 +484,48 @@ private fun EarthworkCalculator() {
                 "VOLUMES (áreas médias)\nCorte: ${fmt(volume.cutVolume)} m³\nAterro: ${fmt(volume.fillVolume)} m³"
         }.getOrElse { "Erro: ${it.message}" }
     }, modifier = Modifier.fillMaxWidth()) { Text("CALCULAR ÁREAS E VOLUMES") }
+    result?.let { ResultCard(it) }
+}
+
+
+@Composable
+private fun TraverseCalculator() {
+    var startE by remember { mutableStateOf("500000") }
+    var startN by remember { mutableStateOf("8000000") }
+    var endE by remember { mutableStateOf("500000") }
+    var endN by remember { mutableStateOf("8000000") }
+    var distances by remember { mutableStateOf("100;100;100;100") }
+    var azimuths by remember { mutableStateOf("0;90;180;270") }
+    var result by remember { mutableStateOf<String?>(null) }
+    Text("Poligonal por azimutes e distâncias", fontSize = 19.sp, fontWeight = FontWeight.Bold)
+    Text("Informe um lado por posição. Azimute contado do Norte, sentido horário. Para poligonal fechada, coordenada final igual à inicial; para enquadrada, informe o ponto final conhecido.", color = Color.LightGray, fontSize = 12.sp)
+    NumberField("E inicial", startE) { startE = it }
+    NumberField("N inicial", startN) { startN = it }
+    NumberField("E final conhecido", endE) { endE = it }
+    NumberField("N final conhecido", endN) { endN = it }
+    NumberField("Distâncias (m), separadas por ;", distances) { distances = it }
+    NumberField("Azimutes (graus), separados por ;", azimuths) { azimuths = it }
+    Button(onClick = {
+        result = runCatching {
+            fun values(input: String) = input.split(';').map { parse(it) ?: error("Valor inválido: $it") }
+            val ds = values(distances); val az = values(azimuths)
+            require(ds.size == az.size) { "Informe a mesma quantidade de distâncias e azimutes." }
+            val se = parse(startE) ?: error("E inicial inválido.")
+            val sn = parse(startN) ?: error("N inicial inválido.")
+            val ee = parse(endE) ?: error("E final inválido.")
+            val en = parse(endN) ?: error("N final inválido.")
+            val sides = ds.indices.map { PoligonalCalculations.Side("P\${it + 1}", ds[it], az[it]) }
+            val r = PoligonalCalculations.bowditch(
+                PoligonalCalculations.Coordinate("INÍCIO",se,sn),sides,
+                PoligonalCalculations.Coordinate("FIM",ee,en)
+            )
+            buildString {
+                append("Fechamento linear: \${fmt(r.linearMisclosure)} m\\n")
+                append("Precisão relativa: \${r.relativePrecision}\\n")
+                append("Soma das distâncias: \${fmt(r.sumDistances)} m\\n\\n")
+                r.coordinates.forEach { append("\${it.name}: E \${fmt(it.easting)} | N \${fmt(it.northing)}\\n") }
+            }
+        }.getOrElse { "Erro: \${it.message}" }
+    }, modifier = Modifier.fillMaxWidth()) { Text("CALCULAR E COMPENSAR") }
     result?.let { ResultCard(it) }
 }
