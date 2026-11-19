@@ -290,8 +290,8 @@ private fun PointFileScreen() {
                 val imported = PointFileExchange.parse(content)
                 points.clear()
                 points.addAll(imported)
-                "Importados \${imported.size} pontos com sucesso."
-            }.getOrElse { "Falha na importação: \${it.message}" }
+                "Importados ${imported.size} pontos com sucesso."
+            }.getOrElse { "Falha na importação: ${it.message}" }
         }
     }
     val exportLauncher = rememberLauncherForActivityResult(
@@ -302,8 +302,8 @@ private fun PointFileScreen() {
                 val csv = PointFileExchange.exportCsv(points.toList())
                 context.contentResolver.openOutputStream(uri)?.bufferedWriter()?.use { it.write(csv) }
                     ?: error("Não foi possível gravar o arquivo.")
-                "Arquivo CSV exportado com \${points.size} pontos."
-            }.getOrElse { "Falha na exportação: \${it.message}" }
+                "Arquivo CSV exportado com ${points.size} pontos."
+            }.getOrElse { "Falha na exportação: ${it.message}" }
         }
     }
 
@@ -322,7 +322,7 @@ private fun PointFileScreen() {
             status = "Já existe um ponto com esse nome."
         } else {
             points.add(PointFileExchange.Point(name.trim(), e, n, h))
-            name = "P\${points.size + 1}"; east = ""; north = ""; elevation = ""
+            name = "P${points.size + 1}"; east = ""; north = ""; elevation = ""
             status = "Ponto adicionado."
         }
     }, modifier = Modifier.fillMaxWidth()) { Text("ADICIONAR PONTO") }
@@ -332,10 +332,10 @@ private fun PointFileScreen() {
         Button(onClick = { exportLauncher.launch("pontos_topograficos.csv") }, enabled = points.isNotEmpty()) { Text("EXPORTAR CSV") }
     }
     Text(status, color = Cyan, fontSize = 13.sp)
-    Text("Pontos cadastrados: \${points.size}", fontWeight = FontWeight.Bold)
+    Text("Pontos cadastrados: ${points.size}", fontWeight = FontWeight.Bold)
     points.takeLast(20).forEach { point ->
-        Text("\${point.name} | E \${fmt(point.east)} | N \${fmt(point.north)}" +
-            (point.elevation?.let { " | H \${fmt(it)}" } ?: ""), color = Color.LightGray, fontSize = 12.sp)
+        Text("${point.name} | E ${fmt(point.east)} | N ${fmt(point.north)}" +
+            (point.elevation?.let { " | H ${fmt(it)}" } ?: ""), color = Color.LightGray, fontSize = 12.sp)
     }
     if (points.size > 20) Text("Exibindo os últimos 20 pontos.", color = Color.Gray, fontSize = 11.sp)
 }
