@@ -273,7 +273,17 @@ private fun ResectionCalculator() {
 @Composable
 private fun PointFileScreen() {
     val context = LocalContext.current
-    val points = remember { mutableStateListOf<PointFileExchange.Point>() }
+    val preferences = remember { context.getSharedPreferences("topo_ia_points", android.content.Context.MODE_PRIVATE) }
+    val points = remember {
+        mutableStateListOf<PointFileExchange.Point>().apply {
+            val saved = preferences.getString("points_csv", null)
+            if (!saved.isNullOrBlank()) runCatching { addAll(PointFileExchange.parse(saved)) }
+        }
+    }
+    LaunchedEffect(points.toList()) {
+        if (points.isEmpty()) preferences.edit().remove("points_csv").apply()
+        else preferences.edit().putString("points_csv", PointFileExchange.exportCsv(points.toList())).apply()
+    }
     var name by remember { mutableStateOf("P1") }
     var east by remember { mutableStateOf("") }
     var north by remember { mutableStateOf("") }
