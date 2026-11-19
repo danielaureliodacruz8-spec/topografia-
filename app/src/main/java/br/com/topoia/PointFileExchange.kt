@@ -74,7 +74,8 @@ object PointFileExchange {
         .replace("ú", "u").replace("ç", "c")
 
     private fun parseNumber(value: String, decimalComma: Boolean): Double {
-        val normalized = if (decimalComma) value.replace(".", "").replace(",", ".") else value
+        val normalized = if (decimalComma && value.contains(",")) value.replace(".", "").replace(",", ".")
+            else if (decimalComma && value.count { it == '.' } > 1) value.replace(".", "") else value
         return normalized.toDoubleOrNull()?.takeIf { it.isFinite() }
             ?: throw IllegalArgumentException("Número inválido no arquivo: '$value'.")
     }
