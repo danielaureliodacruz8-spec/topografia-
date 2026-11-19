@@ -391,9 +391,9 @@ private fun LevelBookCalculator() {
             buildString {
                 append("Cota final: ${fmt(r.finalElevation)} m\n")
                 append("Σ ré: ${fmt(r.sumBacksights)} m | Σ vante: ${fmt(r.sumForesights)} m\n")
-                append("Conferência: ${fmt(r.arithmeticCheck)} m\\n")
-                append("Distância acumulada: ${fmt(r.totalDistanceMeters)} m\\n\\n")
-                r.points.drop(1).forEach { append("${it.point} (${it.type}): ${fmt(it.elevation)} m | HI: ${fmt(it.instrumentHeight)} m\\n") }
+                append("Conferência: ${fmt(r.arithmeticCheck)} m\n")
+                append("Distância acumulada: ${fmt(r.totalDistanceMeters)} m\n\n")
+                r.points.drop(1).forEach { append("${it.point} (${it.type}): ${fmt(it.elevation)} m | HI: ${fmt(it.instrumentHeight)} m\n") }
             }
         }.getOrElse { "Erro na caderneta: ${it.message}" }
     }, modifier = Modifier.fillMaxWidth()) { Text("CALCULAR CADERNETA") }
