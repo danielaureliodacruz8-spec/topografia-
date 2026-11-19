@@ -34,4 +34,10 @@ class PointFileExchangeTest {
             PointFileExchange.parse("name,cota\nP1,10")
         }
     }
+
+    @Test fun importsUtf8BomAndDecimalDotWithSemicolonDelimiter() {
+        val points = PointFileExchange.parse("\uFEFFname;east;north\nP1;100.25;200.75")
+        assertEquals(100.25, points.single().east, 1e-9)
+        assertEquals(200.75, points.single().north, 1e-9)
+    }
 }
