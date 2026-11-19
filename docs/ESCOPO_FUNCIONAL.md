@@ -21,8 +21,9 @@
 11. IA: assistente técnico com conhecimento validado e conectores configuráveis a provedores externos.
 
 ## Estado
-Versão 0.1.0: estrutura Android inicial, cálculo inverso, irradiação direta, nivelamento simples e conversão de estacas.
-Etapa seguinte: núcleo de poligonal com Bowditch e nivelamento composto com compensação proporcional à distância.
+Versão 0.1.0: estrutura Android inicial, cálculos básicos, poligonal fechada com compensação angular e Bowditch, nivelamento composto/caderneta e geometria de curvas rodoviárias.
+Implementado nesta etapa: curva circular simples (T, desenvolvimento, corda longa, externa, flecha, PC/PT), curva vertical parabólica simétrica (PVC/PVI/PVT, cotas, K) e conversão de distância acumulada em estaca com intervalo configurável.
+Próximas etapas: poligonais abertas/enquadradas, estação total, seções transversais, volumes e integração de arquivos.
 
 ## Critérios antes de uso em obra
 - Testes unitários com casos conhecidos e validação independente.
