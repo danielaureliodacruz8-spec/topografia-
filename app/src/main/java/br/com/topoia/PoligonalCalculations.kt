@@ -46,6 +46,60 @@ object PoligonalCalculations {
         return AdjustedResult(points, perimeter, errorE, errorN, error, precision)
     }
 
+    data class AngularAdjustment(
+        val adjustedAnglesDegrees: List<Double>,
+        val angularMisclosureDegrees: Double,
+        val correctionPerAngleDegrees: Double,
+        val azimuthsDegrees: List<Double>,
+        val coordinateResult: AdjustedResult
+    )
+
+    /**
+     * Ajusta poligonal fechada a partir dos ângulos internos e distâncias.
+     * interiorAngles[i] é o ângulo no vértice de início do lado i.
+     * initialAzimuth é o azimute do primeiro lado; clockwise define o sentido do caminhamento.
+     * A compensação angular é uniforme e a linear usa Bowditch.
+     */
+    fun closedFromInteriorAngles(
+        start: Coordinate,
+        distances: List<Double>,
+        interiorAngles: List<Double>,
+        initialAzimuthDegrees: Double,
+        clockwise: Boolean = true
+    ): AngularAdjustment {
+        require(distances.size >= 3) { "Uma poligonal fechada precisa de pelo menos três lados." }
+        require(distances.size == interiorAngles.size) { "Informe um ângulo interno por vértice." }
+        require(distances.all { it > 0.0 && it.isFinite() }) { "Todas as distâncias devem ser positivas." }
+        require(interiorAngles.all { it > 0.0 && it < 360.0 && it.isFinite() }) { "Ângulo interno inválido." }
+        require(initialAzimuthDegrees.isFinite()) { "Azimute inicial inválido." }
+
+        val count = distances.size
+        val theoreticalSum = (count - 2) * 180.0
+        val observedSum = interiorAngles.sum()
+        val misclosure = observedSum - theoreticalSum
+        val correction = -misclosure / count
+        val adjusted = interiorAngles.map { it + correction }
+        require(adjusted.all { it > 0.0 && it < 360.0 }) { "A compensação gerou ângulo inválido." }
+
+        val direction = if (clockwise) 1.0 else -1.0
+        val azimuths = MutableList(count) { 0.0 }
+        azimuths[0] = normalizeAzimuth(initialAzimuthDegrees)
+        for (sideIndex in 1 until count) {
+            val angleAtVertex = adjusted[sideIndex]
+            azimuths[sideIndex] = normalizeAzimuth(
+                azimuths[sideIndex - 1] + direction * (180.0 - angleAtVertex)
+            )
+        }
+
+        val sides = distances.indices.map { i ->
+            Side("P${i + 1}", distances[i], azimuths[i])
+        }
+        val linear = bowditch(start, sides, start)
+        return AngularAdjustment(adjusted, misclosure, correction, azimuths, linear)
+    }
+
+    private fun normalizeAzimuth(value: Double): Double = (value % 360.0 + 360.0) % 360.0
+
     fun azimuthFromCoordinates(e1: Double, n1: Double, e2: Double, n2: Double): Double {
         return (Math.toDegrees(atan2(e2 - e1, n2 - n1)) + 360.0) % 360.0
     }
