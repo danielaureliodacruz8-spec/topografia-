@@ -29,11 +29,12 @@ class PoligonalCalculationsTest {
         val result = PoligonalCalculations.closedFromInteriorAngles(
             start = PoligonalCalculations.Coordinate("P0", 0.0, 0.0),
             distances = listOf(50.0, 50.0, 50.0, 50.0),
-            interiorAngles = listOf(90.1, 89.9, 90.0, 90.0),
+            interiorAngles = listOf(90.2, 89.9, 90.0, 90.0),
             initialAzimuthDegrees = 0.0
         )
-        assertEquals(0.0, result.angularMisclosureDegrees, 1e-9)
-        assertEquals(90.0, result.adjustedAnglesDegrees[0], 1e-9)
+        assertEquals(0.1, result.angularMisclosureDegrees, 1e-9)
+        assertEquals(-0.025, result.correctionPerAngleDegrees, 1e-9)
+        assertEquals(90.175, result.adjustedAnglesDegrees[0], 1e-9)
     }
 
     @Test
