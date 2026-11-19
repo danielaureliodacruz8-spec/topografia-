@@ -32,8 +32,8 @@ class RoadSectionCalculationsTest {
         )
         assertNotNull(result)
         assertEquals("Aterro", result!!.type)
-        assertEquals(11.5, result.offset, 1e-9)
-        assertEquals(97.0, result.elevation, 1e-9)
+        assertEquals(9.0, result.offset, 1e-9)
+        assertEquals(98.6666666667, result.elevation, 1e-9)
     }
 
     @Test
@@ -58,8 +58,8 @@ class RoadSectionCalculationsTest {
         val result = RoadSectionCalculations.daylight(
             RoadSectionCalculations.Edge(5.0, 100.0),
             listOf(
-                RoadSectionCalculations.GroundPoint(5.0, 98.0),
-                RoadSectionCalculations.GroundPoint(8.0, 98.5)
+                RoadSectionCalculations.GroundPoint(5.0, 90.0),
+                RoadSectionCalculations.GroundPoint(8.0, 90.5)
             ),
             1.5,
             1
