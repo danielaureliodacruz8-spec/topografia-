@@ -64,7 +64,7 @@ fun TopoIAApp() {
 @Composable
 private fun Dashboard() {
     var selected by remember { mutableStateOf("Início") }
-    val modules = listOf("Início", "Coordenadas", "Nivelamento", "Caderneta", "Estacas", "Estação total", "Resseção", "Arquivos")
+    val modules = listOf("Início", "Coordenadas", "Nivelamento", "Caderneta", "Estacas", "Estação total", "Resseção", "Rodovia", "Arquivos")
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp)) {
         Text("TOPO IA", fontSize = 30.sp, fontWeight = FontWeight.Bold, color = Cyan)
         Text("Central inteligente de topografia", color = Color.LightGray)
@@ -92,6 +92,7 @@ private fun Dashboard() {
             "Estacas" -> StationCalculator()
             "Estação total" -> TotalStationCalculator()
             "Resseção" -> ResectionCalculator()
+            "Rodovia" -> RoadGeometryCalculator()
             "Arquivos" -> PointFileScreen()
             else -> HomeModules()
         }
@@ -398,4 +399,50 @@ private fun LevelBookCalculator() {
         }.getOrElse { "Erro na caderneta: ${it.message}" }
     }, modifier = Modifier.fillMaxWidth()) { Text("CALCULAR CADERNETA") }
     result?.let { ResultCard(it) }
+}
+
+
+@Composable
+private fun RoadGeometryCalculator() {
+    var radius by remember { mutableStateOf("500") }
+    var delta by remember { mutableStateOf("30") }
+    var piStation by remember { mutableStateOf("10000") }
+    var horizontalResult by remember { mutableStateOf<String?>(null) }
+    var length by remember { mutableStateOf("200") }
+    var grade1 by remember { mutableStateOf("2") }
+    var grade2 by remember { mutableStateOf("-3") }
+    var pviStation by remember { mutableStateOf("12000") }
+    var pviElevation by remember { mutableStateOf("700") }
+    var verticalResult by remember { mutableStateOf<String?>(null) }
+
+    Text("Geometria rodoviária", fontSize = 19.sp, fontWeight = FontWeight.Bold)
+    Text("Curva circular horizontal", color = Cyan, fontWeight = FontWeight.Bold)
+    NumberField("Raio (m)", radius) { radius = it }
+    NumberField("Ângulo central Δ (graus)", delta) { delta = it }
+    NumberField("Estaca acumulada do PI (m)", piStation) { piStation = it }
+    Button(onClick = {
+        val r = parse(radius); val a = parse(delta); val pi = parse(piStation)
+        horizontalResult = if (r != null && a != null && pi != null) runCatching {
+            val curve = RoadGeometryCalculations.horizontalCurve(r, a, pi)
+            "Tangente: \${fmt(curve.tangent)} m\\nDesenvolvimento: \${fmt(curve.development)} m\\nCorda longa: \${fmt(curve.longChord)} m\\nExterna: \${fmt(curve.external)} m\\nOrdenada média: \${fmt(curve.middleOrdinate)} m\\nPC: \${fmt(curve.pcStation)} m (\${RoadGeometryCalculations.stationLabel(curve.pcStation)})\\nPT: \${fmt(curve.ptStation)} m (\${RoadGeometryCalculations.stationLabel(curve.ptStation)})"
+        }.getOrElse { "Erro: \${it.message}" } else "Confira os dados da curva."
+    }, modifier = Modifier.fillMaxWidth()) { Text("CALCULAR CURVA HORIZONTAL") }
+    horizontalResult?.let { ResultCard(it) }
+
+    Text("Curva vertical parabólica", color = Cyan, fontWeight = FontWeight.Bold)
+    NumberField("Comprimento L (m)", length) { length = it }
+    NumberField("Rampa de entrada g1 (%)", grade1) { grade1 = it }
+    NumberField("Rampa de saída g2 (%)", grade2) { grade2 = it }
+    NumberField("Estaca acumulada do PVI (m)", pviStation) { pviStation = it }
+    NumberField("Cota do PVI (m)", pviElevation) { pviElevation = it }
+    Button(onClick = {
+        val values = listOf(length,grade1,grade2,pviStation,pviElevation).map { parse(it) }
+        verticalResult = if (values.all { it != null }) runCatching {
+            val v = values.map { it!! }
+            val curve = RoadGeometryCalculations.verticalCurve(v[0],v[1],v[2],v[3],v[4])
+            val mid = RoadGeometryCalculations.verticalElevation(curve, curve.length / 2.0)
+            "PVC: \${fmt(curve.pvcStation)} m | cota \${fmt(curve.pvcElevation)} m\\nPVI: \${fmt(curve.pviStation)} m | cota \${fmt(curve.pviElevation)} m\\nPVT: \${fmt(curve.pvtStation)} m | cota \${fmt(curve.pvtElevation)} m\\nK: \${fmt(curve.kValue)} m/%\\nCota no meio da curva: \${fmt(mid)} m"
+        }.getOrElse { "Erro: \${it.message}" } else "Confira os dados da curva vertical."
+    }, modifier = Modifier.fillMaxWidth()) { Text("CALCULAR CURVA VERTICAL") }
+    verticalResult?.let { ResultCard(it) }
 }
