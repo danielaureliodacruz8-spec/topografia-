@@ -64,7 +64,7 @@ object RoadSectionCalculations {
         val fill = firstDifference > 0.0
         fun difference(point: GroundPoint): Double {
             val run = point.outwardDistance - ground.first().outwardDistance
-            val design = edge.elevation + (if (fill) 1.0 else -1.0) * run / sideSlopeHOverV
+            val design = edge.elevation + (if (fill) -1.0 else 1.0) * run / sideSlopeHOverV
             return design - point.elevation
         }
 
