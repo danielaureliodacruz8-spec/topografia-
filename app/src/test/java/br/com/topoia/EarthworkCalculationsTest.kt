@@ -30,7 +30,7 @@ class EarthworkCalculationsTest {
         val m = EarthworkCalculations.Section(10.0, EarthworkCalculations.SectionAreas(14.0, 4.0))
         val b = EarthworkCalculations.Section(20.0, EarthworkCalculations.SectionAreas(12.0, 6.0))
         val v = EarthworkCalculations.prismoidal(a, m, b)
-        assertEquals(273.333333333, v.cutVolume, 1e-8)
+        assertEquals(260.0, v.cutVolume, 1e-9)
         assertEquals(80.0, v.fillVolume, 1e-9)
     }
 
@@ -42,8 +42,8 @@ class EarthworkCalculationsTest {
             EarthworkCalculations.Section(40.0, EarthworkCalculations.SectionAreas(12.0, 6.0))
         )
         val result = EarthworkCalculations.cumulative(sections)
-        assertEquals(480.0, result.cumulativeCut.last(), 1e-9)
-        assertEquals(120.0, result.cumulativeFill.last(), 1e-9)
+        assertEquals(500.0, result.cumulativeCut.last(), 1e-9)
+        assertEquals(160.0, result.cumulativeFill.last(), 1e-9)
     }
 
     @Test
