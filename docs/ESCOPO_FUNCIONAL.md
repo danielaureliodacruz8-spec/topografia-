@@ -9,7 +9,7 @@
 
 ## Módulos planejados
 1. Topografia básica: inversa, direta, azimute, rumo, distância, área, interseções e irradiação.
-2. Poligonais: aberta, fechada e enquadrada; fechamento angular e linear; Bowditch e métodos alternativos.
+2. Poligonais: fechada por ângulos internos e aberta enquadrada por deflexões assinadas; fechamento angular e linear; Bowditch. Abertas sem coordenada final conhecida e ajustamentos por mínimos quadrados permanecem em desenvolvimento.
 3. Nivelamento: simples, composto, intermediário, contranivelamento, fechamento e compensação.
 4. Estação total: irradiação, locação, redução de distância inclinada, alturas de instrumento/prisma e resseção.
 5. Geometria rodoviária: estaqueamento, curvas horizontais/verticais, greide, superelevação e seções.
@@ -23,7 +23,7 @@
 ## Estado
 Versão 0.1.0: estrutura Android inicial, cálculos básicos, poligonal fechada com compensação angular e Bowditch, nivelamento composto/caderneta, geometria de curvas rodoviárias e núcleo de seções/terraplenagem, bordas de plataforma e cálculo de off-set de encontro de taludes.
 Implementado nesta etapa: curva circular simples (T, desenvolvimento, corda longa, externa, flecha, PC/PT), curva vertical parabólica simétrica (PVC/PVI/PVT, cotas, K) e conversão de distância acumulada em estaca com intervalo configurável.
-Próximas etapas: poligonais abertas/enquadradas, estação total, superelevação variável por estaca, drenagem, integração de arquivos e interface de campo.
+Próximas etapas: estação total, poligonais abertas sem apoio final conhecido, mínimos quadrados, superelevação variável por estaca, drenagem, integração de arquivos e interface de campo.
 
 ## Critérios antes de uso em obra
 - Testes unitários com casos conhecidos e validação independente.
