@@ -514,18 +514,18 @@ private fun TraverseCalculator() {
             val sn = parse(startN) ?: error("N inicial inválido.")
             val ee = parse(endE) ?: error("E final inválido.")
             val en = parse(endN) ?: error("N final inválido.")
-            val sides = ds.indices.map { PoligonalCalculations.Side("P\${it + 1}", ds[it], az[it]) }
+            val sides = ds.indices.map { PoligonalCalculations.Side("P${it + 1}", ds[it], az[it]) }
             val r = PoligonalCalculations.bowditch(
                 PoligonalCalculations.Coordinate("INÍCIO",se,sn),sides,
                 PoligonalCalculations.Coordinate("FIM",ee,en)
             )
             buildString {
-                append("Fechamento linear: \${fmt(r.linearMisclosure)} m\\n")
-                append("Precisão relativa: \${r.relativePrecision}\\n")
-                append("Soma das distâncias: \${fmt(r.sumDistances)} m\\n\\n")
-                r.coordinates.forEach { append("\${it.name}: E \${fmt(it.easting)} | N \${fmt(it.northing)}\\n") }
+                append("Fechamento linear: ${fmt(r.linearMisclosure)} m\n")
+                append("Precisão relativa: ${r.relativePrecision}\n")
+                append("Soma das distâncias: ${fmt(r.sumDistances)} m\n\n")
+                r.coordinates.forEach { append("${it.name}: E ${fmt(it.easting)} | N ${fmt(it.northing)}\n") }
             }
-        }.getOrElse { "Erro: \${it.message}" }
+        }.getOrElse { "Erro: ${it.message}" }
     }, modifier = Modifier.fillMaxWidth()) { Text("CALCULAR E COMPENSAR") }
     result?.let { ResultCard(it) }
 }
