@@ -258,7 +258,7 @@ private fun ResectionCalculator() {
                     ), a[9], a[10]
                 )
                 if (!r.converged) "Não convergiu. Reveja as medidas e a estimativa inicial."
-                else "Estação calculada\\nE: ${fmt(r.east)} m\\nN: ${fmt(r.north)} m\\nRMS dos resíduos: ${fmt(r.rmsResidual)} m\\nIterações: ${r.iterations}"
+                else "Estação calculada\nE: ${fmt(r.east)} m\nN: ${fmt(r.north)} m\nRMS dos resíduos: ${fmt(r.rmsResidual)} m\nIterações: ${r.iterations}"
             }.getOrElse { "Não foi possível calcular: ${it.message}" }
         } else "Confira todos os valores numéricos."
     }, modifier = Modifier.fillMaxWidth()) { Text("CALCULAR RESSEÇÃO") }
