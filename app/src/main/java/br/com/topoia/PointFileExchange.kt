@@ -68,7 +68,7 @@ object PointFileExchange {
         return fields
     }
 
-    private fun normalizeHeader(value: String): String = value.trim().lowercase(Locale.ROOT)
+    private fun normalizeHeader(value: String): String = value.trim().removePrefix("\uFEFF").lowercase(Locale.ROOT)
         .replace("á", "a").replace("ã", "a").replace("é", "e").replace("ê", "e")
         .replace("í", "i").replace("ó", "o").replace("ô", "o").replace("õ", "o")
         .replace("ú", "u").replace("ç", "c")
