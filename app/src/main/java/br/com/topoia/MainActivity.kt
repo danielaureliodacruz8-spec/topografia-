@@ -64,7 +64,7 @@ fun TopoIAApp() {
 @Composable
 private fun Dashboard() {
     var selected by remember { mutableStateOf("Início") }
-    val modules = listOf("Início", "Coordenadas", "Nivelamento", "Caderneta", "Estacas", "Estação total", "Resseção", "Rodovia", "Arquivos")
+    val modules = listOf("Início", "Coordenadas", "Nivelamento", "Caderneta", "Estacas", "Estação total", "Resseção", "Rodovia", "Terraplenagem", "Arquivos")
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp)) {
         Text("TOPO IA", fontSize = 30.sp, fontWeight = FontWeight.Bold, color = Cyan)
         Text("Central inteligente de topografia", color = Color.LightGray)
@@ -93,6 +93,7 @@ private fun Dashboard() {
             "Estação total" -> TotalStationCalculator()
             "Resseção" -> ResectionCalculator()
             "Rodovia" -> RoadGeometryCalculator()
+            "Terraplenagem" -> EarthworkCalculator()
             "Arquivos" -> PointFileScreen()
             else -> HomeModules()
         }
@@ -445,4 +446,42 @@ private fun RoadGeometryCalculator() {
         }.getOrElse { "Erro: ${it.message}" } else "Confira os dados da curva vertical."
     }, modifier = Modifier.fillMaxWidth()) { Text("CALCULAR CURVA VERTICAL") }
     verticalResult?.let { ResultCard(it) }
+}
+
+
+@Composable
+private fun EarthworkCalculator() {
+    var offsets1 by remember { mutableStateOf("-7;-3;0;3;7") }
+    var differences1 by remember { mutableStateOf("-0.5;-0.3;0.2;0.3;0.1") }
+    var offsets2 by remember { mutableStateOf("-7;-3;0;3;7") }
+    var differences2 by remember { mutableStateOf("-0.4;-0.2;0.25;0.35;0.15") }
+    var interval by remember { mutableStateOf("20") }
+    var result by remember { mutableStateOf<String?>(null) }
+    Text("Terraplenagem: áreas e volumes", fontSize = 19.sp, fontWeight = FontWeight.Bold)
+    Text("Informe offsets e diferenças projeto - terreno. Valores positivos representam aterro; negativos representam corte. Separe os números por ponto e vírgula.", color = Color.LightGray, fontSize = 12.sp)
+    Text("Seção 1", color = Cyan, fontWeight = FontWeight.Bold)
+    NumberField("Offsets da seção 1 (m)", offsets1) { offsets1 = it }
+    NumberField("Projeto - terreno da seção 1 (m)", differences1) { differences1 = it }
+    Text("Seção 2", color = Cyan, fontWeight = FontWeight.Bold)
+    NumberField("Offsets da seção 2 (m)", offsets2) { offsets2 = it }
+    NumberField("Projeto - terreno da seção 2 (m)", differences2) { differences2 = it }
+    NumberField("Distância entre seções (m)", interval) { interval = it }
+    Button(onClick = {
+        result = runCatching {
+            fun values(input: String) = input.split(';').map { parse(it) ?: error("Valor inválido: $it") }
+            val o1 = values(offsets1); val d1 = values(differences1)
+            val o2 = values(offsets2); val d2 = values(differences2)
+            val distance = parse(interval) ?: error("Distância inválida.")
+            val a1 = EarthworkCalculations.sectionAreas(o1,d1)
+            val a2 = EarthworkCalculations.sectionAreas(o2,d2)
+            val volume = EarthworkCalculations.averageEndArea(
+                EarthworkCalculations.Section(0.0,a1),
+                EarthworkCalculations.Section(distance,a2)
+            )
+            "SEÇÃO 1\\\\nCorte: \${fmt(a1.cutArea)} m² | Aterro: \${fmt(a1.fillArea)} m²\\\\n" +
+                "SEÇÃO 2\\\\nCorte: \${fmt(a2.cutArea)} m² | Aterro: \${fmt(a2.fillArea)} m²\\\\n" +
+                "VOLUMES (áreas médias)\\\\nCorte: \${fmt(volume.cutVolume)} m³\\\\nAterro: \${fmt(volume.fillVolume)} m³"
+        }.getOrElse { "Erro: \${it.message}" }
+    }, modifier = Modifier.fillMaxWidth()) { Text("CALCULAR ÁREAS E VOLUMES") }
+    result?.let { ResultCard(it) }
 }
